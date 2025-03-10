@@ -1,122 +1,124 @@
-    import { faBath, faBed, faLocationDot, faMoneyBill, faRulerCombined } from '@fortawesome/free-solid-svg-icons';
+import { faBath, faBed, faLocationDot, faRulerCombined } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-    const properties = [
-        {
-            type: "Rumah",
-            title: "Jual Rumah Mewah Lokasi Strategis Pusat Kota",
-            price: "Rp 2.750.000.000",
-            imgSrc: "images/properties/8.png",
-            beds: 5,
-            baths: 6,
-            location: "Tamalate, Makassar Kota, Sulawesi Selatan",
-            link: "https://www.olx.co.id/item/jual-rumah-mewah-lokasi-strategis-pusat-kota-iid-922022342"
-          },
-          {
-            type: "Rumah",
-            title: "Rumah Baru 2 Lantai di Pusat Kota",
-            price: "Rp 889.000.000",
-            imgSrc: "images/properties/9.png",
-            beds: 5,
-            baths: 6,
-            location: "Tamalate, Makassar Kota, Sulawesi Selatan",
-            link: "https://www.olx.co.id/item/rumah-baru-2-lantai-di-pusat-kota-iid-921012393"
-          },
-          {
-            type: "Rumah",
-            title: "Butuh dana cepat,dijual rumah tengah kota",
-            price: "Rp 18.500.000.000",
-            imgSrc: "images/properties/10.png",
-            beds: 5,
-            baths: 6,
-            location: "Panakkukang, Makassar Kota, Sulawesi Selatan",
-            link: "https://www.olx.co.id/item/butuh-dana-cepatdijual-rumah-tengah-kota-iid-921469260"
-          }
-    ];
+const properties = [
+  {
+    type: "Rumah",
+    title: "Jual Rumah Mewah Lokasi Strategis Pusat Kota",
+    price: "Rp 2.750.000.000",
+    imgSrc: "images/properties/8.png",
+    beds: 5,
+    baths: 6,
+    location: "Tamalate, Makassar Kota, Sulawesi Selatan",
+    link: "https://www.olx.co.id/item/jual-rumah-mewah-lokasi-strategis-pusat-kota-iid-922022342"
+  },
+  {
+    type: "Rumah",
+    title: "Rumah Baru 2 Lantai di Pusat Kota",
+    price: "Rp 889.000.000",
+    imgSrc: "images/properties/9.png",
+    beds: 5,
+    baths: 6,
+    location: "Tamalate, Makassar Kota, Sulawesi Selatan",
+    link: "https://www.olx.co.id/item/rumah-baru-2-lantai-di-pusat-kota-iid-921012393"
+  },
+  {
+    type: "Rumah",
+    title: "Butuh dana cepat, dijual rumah tengah kota",
+    price: "Rp 18.500.000.000",
+    imgSrc: "images/properties/10.png",
+    beds: 5,
+    baths: 6,
+    location: "Panakkukang, Makassar Kota, Sulawesi Selatan",
+    link: "https://www.olx.co.id/item/butuh-dana-cepatdijual-rumah-tengah-kota-iid-921469260"
+  }
+];
 
-    const RecentsHome = () => {
-    console.log(properties);
-
-    return (
-        <>
-        <section className="px-4 py-6">
-            <div className="container-xl lg:container m-auto">
-            <h2 className="text-3xl font-bold text-blue-500 mb-6 text-center">
-                Recent Properties
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {Array.isArray(properties) && properties.map((property, index) => (
-                <div key={index} className="bg-white rounded-xl shadow-md relative">
+const RecentsHome = () => {
+  return (
+    <>
+      <section className="px-4 py-12 bg-gray-50">
+        <div className="container-xl lg:container mx-auto">
+          <h2 className="text-3xl font-bold text-blue-700 mb-8 text-center">
+            Recent Properties
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {properties.map((property, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 overflow-hidden" // Efek scale dan overflow-hidden
+              >
+                <div className="flex flex-col h-full">
+                  <div className="flex-grow">
                     <img
-                    src={property.imgSrc}
-                    alt={property.title}
-                    className="object-cover rounded-t-xl"
+                      src={property.imgSrc}
+                      alt={property.title}
+                      className="w-full h-48 object-cover rounded-t-xl"
                     />
-                    <div className="p-4">
-                    <div className="text-left md:text-center lg:text-left mb-6">
-                        <div className="text-gray-600">{property.type}</div>
-                        <h3 className="text-xl font-bold text-black">{property.title}</h3>
-                    </div>
-                    <h3 className="absolute top-[10px] right-[10px] bg-white px-4 py-2 rounded-lg text-blue-500 font-bold text-right md:text-center lg:text-right">
+                    <div className="p-6">
+                      <div className="mb-4">
+                        <span className="text-sm text-blue-600 font-semibold">
+                          {property.type}
+                        </span>
+                        <h3 className="text-xl font-bold text-gray-800 mt-2">
+                          {property.title}
+                        </h3>
+                      </div>
+                      <div className="text-blue-700 font-bold text-lg mb-4">
                         {property.price}
-                    </h3>
+                      </div>
 
-                    <div className="flex justify-center gap-4 text-gray-500 mb-4">
-                        <p>
-                        <FontAwesomeIcon icon={faBed} size="sm" className="h-4" /> {property.beds}
-                        <span className="md:hidden lg:inline"> Beds</span>
-                        </p>
-                        <p>
-                        <FontAwesomeIcon icon={faBath} size="sm" className="h-4" /> {property.baths}
-                        <span className="md:hidden lg:inline"> Baths</span>
-                        </p>
-                        <p>
-                        <FontAwesomeIcon icon={faRulerCombined} className="h-4" /> {property.sqft}
-                        <span className="md:hidden lg:inline"> sqft</span>
-                        </p>
-                    </div>
-
-                    <div className="flex justify-center gap-4 text-green-900 text-sm mb-4">
-                        <p>
-                        <FontAwesomeIcon icon={faMoneyBill} size="sm" className="h-4" /> Weekly
-                        </p>
-                        <p>
-                        <FontAwesomeIcon icon={faMoneyBill} size="sm" className="h-4" /> Monthly
-                        </p>
-                    </div>
-
-                    <div className="border border-gray-100 mb-5"></div>
-
-                    <div className="flex flex-col lg:flex-row justify-between mb-4">
-                        <div className="flex align-middle gap-2 mb-4 lg:mb-0">
-                        <FontAwesomeIcon icon={faLocationDot} className="h-4 text-orange-700" />
-                        <span className="text-orange-700">{property.location}</span>
+                      {/* Ikon Informasi */}
+                      <div className="flex justify-between text-sm text-gray-600 mb-4">
+                        <div className="flex items-center space-x-2">
+                          <FontAwesomeIcon icon={faBed} className="h-4 text-blue-600" />
+                          <span>{property.beds} Beds</span>
                         </div>
-                        <a
-                        href={property.link}
-                        className="h-[36px] bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-center text-sm"
-                        >
-                        Details
-                        </a>
+                        <div className="flex items-center space-x-2">
+                          <FontAwesomeIcon icon={faBath} className="h-4 text-blue-600" />
+                          <span>{property.baths} Baths</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <FontAwesomeIcon icon={faRulerCombined} className="h-4 text-blue-600" />
+                          <span>2000 sqft</span> {/* Contoh ukuran */}
+                        </div>
+                      </div>
+
+                      {/* Lokasi */}
+                      <div className="flex items-center text-sm text-gray-600 mb-1"> {/* Mengurangi margin-bottom */}
+                        <FontAwesomeIcon icon={faLocationDot} className="h-4 text-blue-600 mr-2" />
+                        <span>{property.location}</span>
+                      </div>
                     </div>
-                    </div>
+                  </div>
+
+                  {/* Tombol Details */}
+                  <div className="p-6 pt-4"> {/* Mengurangi padding-top */}
+                    <a
+                      href={property.link}
+                      className="block w-full bg-blue-600 text-white text-center py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+                    >
+                      Details
+                    </a>
+                  </div>
                 </div>
-                ))}
-            </div>
-            </div>
-        </section>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-        <section className="m-auto max-w-lg my-10 px-6">
-            <a
-            href="/properties"
-            className="block bg-black text-white text-center py-4 px-6 rounded-xl hover:bg-gray-700"
-            style={{ border: 'none' }}
-            >
-            View All Properties
-            </a>
-        </section>
-        </>
-    );
-    }
+      {/* Tombol View All Properties */}
+      <section className="m-auto max-w-lg my-10 px-6">
+        <a
+          href="/properties"
+          className="block bg-blue-700 text-white text-center py-3 px-6 rounded-lg hover:bg-blue-800 transition duration-300"
+        >
+          View All Properties
+        </a>
+      </section>
+    </>
+  );
+};
 
-    export default RecentsHome;
+export default RecentsHome;

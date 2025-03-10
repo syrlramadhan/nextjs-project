@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const AddProperty = () => {
   const [property, setProperty] = useState({
@@ -14,6 +15,10 @@ const AddProperty = () => {
     photo: null,
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     const val = type === "file" ? files[0] : value;
@@ -25,8 +30,9 @@ const AddProperty = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Property added:", property);
-  
+    setIsSubmitting(true);
+    setSubmitError(null);
+
     try {
       const formData = new FormData();
       formData.append("name", property.name);
@@ -37,17 +43,20 @@ const AddProperty = () => {
       formData.append("bathrooms", property.bathrooms);
       formData.append("description", property.description);
       formData.append("photo", property.photo);
-  
+
       const response = await fetch("http://localhost:5000/api/add-property", {
         method: "POST",
         body: formData,
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to add property");
       }
-  
-      
+
+      setSubmitSuccess(true);
+      setTimeout(() => setSubmitSuccess(false), 3000); // Hilangkan pesan sukses setelah 3 detik
+
+      // Reset form
       setProperty({
         name: "",
         type: "",
@@ -58,154 +67,144 @@ const AddProperty = () => {
         description: "",
         photo: null,
       });
-  
-      console.log("Property added successfully!");
     } catch (error) {
       console.error("Error adding property:", error);
-      
+      setSubmitError(error.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
-  
+
+  // Animasi untuk setiap elemen form
+  const formItemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  // Daftar field form
+  const formFields = [
+    { id: "name", label: "Name", type: "text", colSpan: "col-span-2" },
+    { id: "type", label: "Type", type: "text" },
+    { id: "price", label: "Price", type: "number" },
+    { id: "address", label: "Address", type: "text", colSpan: "col-span-2" },
+    { id: "bedrooms", label: "Bedrooms", type: "number" },
+    { id: "bathrooms", label: "Bathrooms", type: "number" },
+    {
+      id: "description",
+      label: "Description",
+      type: "textarea",
+      colSpan: "col-span-2",
+    },
+    { id: "photo", label: "Upload Photo", type: "file", colSpan: "col-span-2" },
+  ];
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-center">Add New Property</h2>
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-2 gap-4 text-black"
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-purple-50 p-6">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-8"
       >
-        <div className="col-span-2 mb-4">
-          <label htmlFor="name" className="block text-gray-700 font-bold mb-2">
-            Name:
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={property.name}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
-        <div className="col-span-1 mb-4">
-          <label htmlFor="type" className="block text-gray-700 font-bold mb-2">
-            Type:
-          </label>
-          <input
-            type="text"
-            id="type"
-            name="type"
-            value={property.type}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
-        <div className="col-span-1 mb-4">
-          <label htmlFor="price" className="block text-gray-700 font-bold mb-2">
-            Price:
-          </label>
-          <input
-            type="number"
-            id="price"
-            name="price"
-            value={property.price}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
-        <div className="col-span-2 mb-4">
-          <label
-            htmlFor="address"
-            className="block text-gray-700 font-bold mb-2"
+        <motion.h2
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-3xl font-bold text-center text-gray-800 mb-8"
+        >
+          Add New Property
+        </motion.h2>
+
+        {submitSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6"
           >
-            Address:
-          </label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={property.address}
-            onChange={handleChange}
-            className="w-full p-2 border -300 rounded-md"
-            required
-          />
-        </div>
-        <div className="col-span-1 mb-4">
-          <label
-            htmlFor="bedrooms"
-            className="block text-gray-700 font-bold mb-2"
+            Property added successfully!
+          </motion.div>
+        )}
+
+        {submitError && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6"
           >
-            Bedrooms:
-          </label>
-          <input
-            type="number"
-            id="bedrooms"
-            name="bedrooms"
-            value={property.bedrooms}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
-        <div className="col-span-1 mb-4">
-          <label
-            htmlFor="bathrooms"
-            className="block text-gray-700 font-bold mb-2"
+            {submitError}
+          </motion.div>
+        )}
+
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {formFields.map((field, index) => (
+            <motion.div
+              key={field.id}
+              initial="hidden"
+              animate="visible"
+              variants={formItemVariants}
+              transition={{ delay: index * 0.2 }}
+              className={field.colSpan}
+            >
+              <label
+                htmlFor={field.id}
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {field.label}
+              </label>
+              {field.type === "textarea" ? (
+                <textarea
+                  id={field.id}
+                  name={field.id}
+                  value={property[field.id]}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                  rows="4"
+                  required
+                />
+              ) : field.type === "file" ? (
+                <div className="flex items-center justify-center w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
+                  <input
+                    type="file"
+                    id={field.id}
+                    name={field.id}
+                    onChange={handleChange}
+                    className="w-full"
+                    required
+                  />
+                </div>
+              ) : (
+                <input
+                  type={field.type}
+                  id={field.id}
+                  name={field.id}
+                  value={property[field.id]}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                  required
+                />
+              )}
+            </motion.div>
+          ))}
+
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={formItemVariants}
+            transition={{ delay: formFields.length * 0.2 }}
+            className="col-span-2"
           >
-            Bathrooms:
-          </label>
-          <input
-            type="number"
-            id="bathrooms"
-            name="bathrooms"
-            value={property.bathrooms}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
-        <div className="col-span-2 mb-4">
-          <label
-            htmlFor="description"
-            className="block text-gray-700 font-bold mb-2"
-          >
-            Description:
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={property.description}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
-        <div className="col-span-2 mb-4">
-          <label htmlFor="photo" className="block text-gray-700 font-bold mb-2">
-            Upload Photo:
-          </label>
-          <input
-            type="file"
-            id="photo"
-            name="photo"
-            accept="image/*"
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
-        <div className="col-span-2 mb-4">
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300"
-          >
-            Add Property
-          </button>
-        </div>
-      </form>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-200 disabled:bg-blue-300"
+            >
+              {isSubmitting ? "Submitting..." : "Add Property"}
+            </button>
+          </motion.div>
+        </form>
+      </motion.div>
     </div>
   );
 };
