@@ -1,16 +1,22 @@
-import Recents from "@/components/Recent"
-const properties = () => {
+"use client";
+
+import { useTheme } from "@/context/ThemeContext"; // Import useTheme
+import Recents from "@/components/Recents"; // Pastikan path komponen Recents benar
+
+const Properties = () => {
+  const { isDarkMode } = useTheme(); // Ambil state dark mode
+
   return (
     <>
-            <section className="container-xl lg:container m-auto bg-white">
-        <div className="container-xl lg:container m-auto">
+      <section className={`w-full ${isDarkMode ? "bg-gray-900" : "bg-white"}`}>
+        <div className="container mx-auto"> {/* Gunakan container dan mx-auto untuk posisi tengah */}
           <div className="">
             <Recents />
           </div>
         </div>
       </section>
     </>
-  )
-}
+  );
+};
 
-export default properties
+export default Properties;

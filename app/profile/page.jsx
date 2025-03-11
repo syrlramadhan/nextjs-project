@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useTheme } from "@/context/ThemeContext"; // Import useTheme
 
 const ProfileEditPage = () => {
+  const { isDarkMode } = useTheme(); // Ambil state dark mode
   // State untuk data profil
   const [name, setName] = useState("Syahrul Ramadhan");
   const [email, setEmail] = useState("105841113722@student.unismuh.ac.id");
@@ -27,16 +29,26 @@ const ProfileEditPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-200 py-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
+    <div className={`min-h-screen text-gray-600 ${
+      isDarkMode ? "bg-gray-900" : "bg-gray-200"
+    } py-8`}>
+      <div className={`max-w-4xl mx-auto ${
+        isDarkMode ? "bg-gray-800" : "bg-white"
+      } rounded-lg shadow-lg p-8`}>
         {/* Header */}
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Edit Profil</h1>
+        <h1 className={`text-3xl font-bold ${
+          isDarkMode ? "text-white" : "text-gray-800"
+        } mb-6`}>
+          Edit Profil
+        </h1>
 
         {/* Formulir Edit Profil */}
         <div className="space-y-6">
           {/* Upload Foto Profil */}
           <div className="flex flex-col items-center">
-            <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500">
+            <div className={`relative w-32 h-32 rounded-full overflow-hidden border-4 ${
+              isDarkMode ? "border-blue-600" : "border-blue-500"
+            }`}>
               {previewImage ? (
                 <Image
                   src={previewImage}
@@ -46,13 +58,17 @@ const ProfileEditPage = () => {
                   className="object-cover w-full h-full"
                 />
               ) : (
-                <div className="w-full h-full bg-blue-500 flex items-center justify-center text-white text-4xl font-bold">
+                <div className={`w-full h-full ${
+                  isDarkMode ? "bg-blue-600" : "bg-blue-500"
+                } flex items-center justify-center text-white text-4xl font-bold`}>
                   {name.charAt(0).toUpperCase()}
                 </div>
               )}
             </div>
             <label className="mt-4 cursor-pointer">
-              <span className="text-blue-600 hover:text-blue-500 font-medium">
+              <span className={`${
+                isDarkMode ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-500"
+              } font-medium`}>
                 Unggah Foto Baru
               </span>
               <input
@@ -66,23 +82,35 @@ const ProfileEditPage = () => {
 
           {/* Input Nama */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Nama</label>
+            <label className={`block text-sm font-medium ${
+              isDarkMode ? "text-gray-300" : "text-gray-700"
+            }`}>
+              Nama
+            </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`mt-1 block w-full px-4 py-2 ${
+                isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "border-gray-300"
+              } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
             />
           </div>
 
           {/* Input Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className={`block text-sm font-medium ${
+              isDarkMode ? "text-gray-300" : "text-gray-700"
+            }`}>
+              Email
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`mt-1 block w-full px-4 py-2 ${
+                isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "border-gray-300"
+              } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
             />
           </div>
 
@@ -90,7 +118,9 @@ const ProfileEditPage = () => {
           <div className="flex justify-end">
             <button
               onClick={handleSave}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`px-6 py-2 ${
+                isDarkMode ? "bg-blue-700 hover:bg-blue-600" : "bg-blue-600 hover:bg-blue-500"
+              } text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
             >
               Simpan Perubahan
             </button>

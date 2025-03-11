@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { faBath, faBed, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion } from 'framer-motion';
+import { useTheme } from "@/context/ThemeContext"; // Import useTheme
 
-const RecentsHome = () => {
+const Recents = () => {
+  const { isDarkMode } = useTheme(); // Ambil state dark mode
   const [properties, setProperties] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,7 +18,7 @@ const RecentsHome = () => {
       id: 1,
       name: "Rumah Mewah di Pusat Kota",
       type: "Rumah",
-      price: "Rp 2.750.000.000",
+      price: "2750000000", // Harga tanpa titik
       photo: "8.png", // Hanya nama file, tanpa path
       bedrooms: 5,
       bathrooms: 6,
@@ -26,7 +28,7 @@ const RecentsHome = () => {
       id: 2,
       name: "Rumah Baru 2 Lantai",
       type: "Rumah",
-      price: "Rp 889.000.000",
+      price: "889000000", // Harga tanpa titik
       photo: "9.png", // Hanya nama file, tanpa path
       bedrooms: 4,
       bathrooms: 3,
@@ -36,13 +38,18 @@ const RecentsHome = () => {
       id: 3,
       name: "Butuh Dana Cepat, Dijual Rumah",
       type: "Rumah",
-      price: "Rp 18.500.000.000",
+      price: "18500000000", // Harga tanpa titik
       photo: "10.png", // Hanya nama file, tanpa path
       bedrooms: 6,
       bathrooms: 5,
       address: "Mariso, Makassar",
     },
   ];
+
+  // Fungsi untuk memformat angka dengan titik setiap tiga digit dan menambahkan "Rp"
+  const formatPrice = (price) => {
+    return `Rp ${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+  };
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -82,20 +89,26 @@ const RecentsHome = () => {
 
   return (
     <>
-      <section className="px-4 py-6 bg-gray-50">
-        <div className="container-xl lg:container mx-auto">
+      <section className={`w-full min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
+        <div className="w-full max-w-none px-4 py-6">
           <motion.h2
             initial="hidden"
             animate="visible"
             variants={titleVariants}
-            className="text-3xl font-bold text-blue-700 mb-8 text-center"
+            className={`text-3xl font-bold ${
+              isDarkMode ? "text-white" : "text-blue-700"
+            } mb-8 text-center`}
           >
             Properties
           </motion.h2>
           {isLoading ? (
-            <div className="text-center text-gray-600">Loading properties...</div>
+            <div className={`text-center ${
+              isDarkMode ? "text-gray-400" : "text-gray-600"
+            }`}>
+              Loading properties...
+            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="w-full max-w-none grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {displayProperties.map((property, index) => (
                 <motion.div
                   key={property.id}
@@ -103,7 +116,9 @@ const RecentsHome = () => {
                   animate="visible"
                   variants={cardVariants}
                   transition={{ delay: index * 0.1 }} // Delay animasi untuk setiap kartu
-                  className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col"
+                  className={`${
+                    isDarkMode ? "bg-gray-800" : "bg-white"
+                  } rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col`}
                 >
                   <img
                     src={error ? `images/properties/${property.photo}` : `http://localhost:5000${property.photo}`}
@@ -112,32 +127,48 @@ const RecentsHome = () => {
                   />
                   <div className="p-6 flex flex-col flex-grow">
                     <div className="mb-4">
-                      <span className="text-sm text-blue-600 font-semibold">
+                      <span className={`text-sm ${
+                        isDarkMode ? "text-blue-400" : "text-blue-600"
+                      } font-semibold`}>
                         {property.type}
                       </span>
-                      <h3 className="text-xl font-bold text-gray-800 mt-2">
+                      <h3 className={`text-xl font-bold ${
+                        isDarkMode ? "text-white" : "text-gray-800"
+                      } mt-2`}>
                         {property.name}
                       </h3>
                     </div>
-                    <div className="text-blue-700 font-bold text-lg mb-4">
-                      {property.price}
+                    <div className={`${
+                      isDarkMode ? "text-blue-400" : "text-blue-700"
+                    } font-bold text-lg mb-4`}>
+                      {formatPrice(property.price)} {/* Format harga dengan "Rp" dan titik */}
                     </div>
 
                     {/* Ikon Informasi */}
-                    <div className="flex justify-between text-sm text-gray-600 mb-4">
+                    <div className={`flex justify-between text-sm ${
+                      isDarkMode ? "text-gray-400" : "text-gray-600"
+                    } mb-4`}>
                       <div className="flex items-center space-x-2">
-                        <FontAwesomeIcon icon={faBed} className="h-4 text-blue-600" />
+                        <FontAwesomeIcon icon={faBed} className={`h-4 ${
+                          isDarkMode ? "text-blue-400" : "text-blue-600"
+                        }`} />
                         <span>{property.bedrooms} Beds</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <FontAwesomeIcon icon={faBath} className="h-4 text-blue-600" />
+                        <FontAwesomeIcon icon={faBath} className={`h-4 ${
+                          isDarkMode ? "text-blue-400" : "text-blue-600"
+                        }`} />
                         <span>{property.bathrooms} Baths</span>
                       </div>
                     </div>
 
                     {/* Lokasi */}
-                    <div className="flex items-center text-sm text-gray-600 mb-6">
-                      <FontAwesomeIcon icon={faLocationDot} className="h-4 text-blue-600 mr-2" />
+                    <div className={`flex items-center text-sm ${
+                      isDarkMode ? "text-gray-400" : "text-gray-600"
+                    } mb-6`}>
+                      <FontAwesomeIcon icon={faLocationDot} className={`h-4 ${
+                        isDarkMode ? "text-blue-400" : "text-blue-600"
+                      } mr-2`} />
                       <span>{property.address}</span>
                     </div>
 
@@ -145,7 +176,9 @@ const RecentsHome = () => {
                     <div className="mt-auto">
                       <a
                         href={property.link || "#"} // Gunakan link dari database atau "#" jika tidak ada
-                        className="block w-full bg-blue-600 text-white text-center py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+                        className={`block w-full ${
+                          isDarkMode ? "bg-blue-700 hover:bg-blue-600" : "bg-blue-600 hover:bg-blue-700"
+                        } text-white text-center py-2 rounded-lg transition duration-300`}
                       >
                         Details
                       </a>
@@ -161,6 +194,6 @@ const RecentsHome = () => {
   );
 };
 
-RecentsHome.useClient = true;
+Recents.useClient = true;
 
-export default RecentsHome;
+export default Recents;

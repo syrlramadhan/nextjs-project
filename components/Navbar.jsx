@@ -1,12 +1,14 @@
 "use client";
 
+import { useTheme } from "@/context/ThemeContext"; // Import useTheme
 import Image from "next/image";
 import Link from "next/link";
-import { FaBell, FaGoogle, FaBars, FaBuilding } from "react-icons/fa";
-import { useState, useEffect } from "react";
+import { FaBell, FaGoogle, FaBars, FaBuilding, FaCog } from "react-icons/fa";
+import { useState, useEffect, useRef } from "react";
 import Sidebar from "@/components/Sidebar";
 
 const Navbar = () => {
+  const { isDarkMode } = useTheme(); // Ambil state dark mode
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -32,37 +34,24 @@ const Navbar = () => {
     },
   ]);
 
-  // Data pengguna (contoh)
-  const user = {
-    name: "Syahrul Ramadhan",
-    email: "105841113722@student.unismuh.ac.id",
-    image: null, // Ganti dengan URL gambar profil jika ada
+  const userProfile = {
+    name: "John Doe",
+    email: "johndoe@example.com",
+    profilePicture: null,
   };
 
-  // Hitung jumlah notifikasi yang belum dibaca
   const unreadNotificationsCount = notifications.filter(
     (notification) => !notification.isRead
   ).length;
 
-  // Fungsi untuk mendapatkan huruf awalan dari nama pengguna
-  const getInitials = (name) => {
-    return name
-      .split(" ")
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase();
-  };
+  const notificationRef = useRef(null);
+  const profileRef = useRef(null);
 
-  // Fungsi untuk toggle sidebar
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Fungsi untuk toggle notifikasi
   const toggleNotification = () => {
-    setIsNotificationOpen(!isNotificationOpen);
-
-    // Jika pop-up notifikasi ditutup, tandai notifikasi yang ditampilkan sebagai "dibaca"
     if (isNotificationOpen) {
       setNotifications(
         notifications.map((notification) => ({
@@ -71,14 +60,13 @@ const Navbar = () => {
         }))
       );
     }
+    setIsNotificationOpen(!isNotificationOpen);
   };
 
-  // Fungsi untuk toggle pop-up profil
   const toggleProfile = () => {
     setIsProfileOpen(!isProfileOpen);
   };
 
-  // Efek untuk mendeteksi scroll
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {
@@ -92,13 +80,43 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
+        setIsNotificationOpen(false);
+        setNotifications(
+          notifications.map((notification) => ({
+            ...notification,
+            isRead: true,
+          }))
+        );
+      }
+
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [notifications]);
+
   return (
     <>
       {/* Navbar */}
       <nav
         className={`fixed top-0 left-0 w-full ${
           isScrolled
-            ? "backdrop-blur-sm bg-white/50 shadow-lg"
+            ? `backdrop-blur-sm ${
+                isDarkMode ? "bg-gray-800/50" : "bg-white/50"
+              } shadow-lg`
+            : isDarkMode
+            ? "bg-gray-900"
             : "bg-blue-700"
         } z-50 transition-all duration-300`}
       >
@@ -110,25 +128,49 @@ const Navbar = () => {
                 type="button"
                 onClick={toggleSidebar}
                 className={`rounded-lg p-2 ${
-                  isScrolled ? "text-gray-800 hover:bg-gray-200" : "text-white hover:bg-blue-600"
+                  isScrolled
+                    ? isDarkMode
+                      ? "text-gray-200 hover:bg-gray-700"
+                      : "text-gray-800 hover:bg-gray-200"
+                    : isDarkMode
+                    ? "text-gray-200 hover:bg-gray-700"
+                    : "text-white hover:bg-blue-600"
                 } focus:outline-none focus:ring-2 focus:ring-white`}
               >
                 <span className="sr-only">Open sidebar</span>
                 <FaBars
                   className={`h-6 w-6 ${
-                    isScrolled ? "text-gray-800" : "text-white"
+                    isScrolled
+                      ? isDarkMode
+                        ? "text-gray-200"
+                        : "text-gray-800"
+                      : isDarkMode
+                      ? "text-gray-200"
+                      : "text-white"
                   }`}
                 />
               </button>
               <Link href="/" className="ml-4 flex items-center">
                 <FaBuilding
                   className={`h-8 w-8 ${
-                    isScrolled ? "text-gray-800" : "text-white"
+                    isScrolled
+                      ? isDarkMode
+                        ? "text-gray-200"
+                        : "text-gray-800"
+                      : isDarkMode
+                      ? "text-gray-200"
+                      : "text-white"
                   }`}
                 />
                 <span
                   className={`ml-2 hidden text-xl font-bold ${
-                    isScrolled ? "text-gray-800" : "text-white"
+                    isScrolled
+                      ? isDarkMode
+                        ? "text-gray-200"
+                        : "text-gray-800"
+                      : isDarkMode
+                      ? "text-gray-200"
+                      : "text-white"
                   } md:block`}
                 >
                   MakassarProperty
@@ -143,36 +185,55 @@ const Navbar = () => {
                 href="/login"
                 className={`flex items-center rounded-lg px-3 py-2 ${
                   isScrolled
-                    ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                    ? isDarkMode
+                      ? "bg-gray-700 text-gray-200 hover:bg-gray-600"
+                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                    : isDarkMode
+                    ? "bg-gray-700 text-gray-200 hover:bg-gray-600"
                     : "bg-blue-600 text-white hover:bg-blue-500"
                 } focus:outline-none focus:ring-2 focus:ring-white`}
               >
                 <FaGoogle
                   className={`mr-2 ${
-                    isScrolled ? "text-gray-800" : "text-white"
+                    isScrolled
+                      ? isDarkMode
+                        ? "text-gray-200"
+                        : "text-gray-800"
+                      : isDarkMode
+                      ? "text-gray-200"
+                      : "text-white"
                   }`}
                 />
                 <span>Login</span>
               </Link>
 
               {/* Notifikasi */}
-              <div className="relative">
+              <div className="relative" ref={notificationRef}>
                 <button
                   type="button"
                   onClick={toggleNotification}
                   className={`relative rounded-full p-2 ${
                     isScrolled
-                      ? "text-gray-800 hover:bg-gray-200"
+                      ? isDarkMode
+                        ? "text-gray-200 hover:bg-gray-700"
+                        : "text-gray-800 hover:bg-gray-200"
+                      : isDarkMode
+                      ? "text-gray-200 hover:bg-gray-700"
                       : "text-white hover:bg-blue-600"
                   } focus:outline-none focus:ring-2 focus:ring-white`}
                 >
                   <span className="sr-only">View notifications</span>
                   <FaBell
                     className={`h-6 w-6 ${
-                      isScrolled ? "text-gray-800" : "text-white"
+                      isScrolled
+                        ? isDarkMode
+                          ? "text-gray-200"
+                          : "text-gray-800"
+                        : isDarkMode
+                        ? "text-gray-200"
+                        : "text-white"
                     }`}
                   />
-                  {/* Tampilkan jumlah notifikasi yang belum dibaca */}
                   {unreadNotificationsCount > 0 && (
                     <span className="absolute top-0 right-0 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
                       {unreadNotificationsCount}
@@ -182,9 +243,19 @@ const Navbar = () => {
 
                 {/* Pop-up Notifikasi */}
                 {isNotificationOpen && (
-                  <div className="absolute right-0 mt-2 w-80 rounded-lg bg-white shadow-lg">
+                  <div
+                    className={`absolute right-0 mt-2 w-80 rounded-lg shadow-lg ${
+                      isDarkMode ? "bg-gray-800" : "bg-white"
+                    }`}
+                  >
                     <div className="p-4">
-                      <h3 className="text-lg font-bold text-gray-800">Notifikasi</h3>
+                      <h3
+                        className={`text-lg font-bold ${
+                          isDarkMode ? "text-gray-200" : "text-gray-800"
+                        }`}
+                      >
+                        Notification
+                      </h3>
                       <div className="mt-2 space-y-2">
                         {notifications
                           .filter((notification) => !notification.isRead)
@@ -192,20 +263,41 @@ const Navbar = () => {
                             <div
                               key={notification.id}
                               className={`rounded-lg p-3 ${
-                                !notification.isRead ? "bg-gray-50" : "bg-white"
-                              } hover:bg-gray-100`}
+                                !notification.isRead
+                                  ? isDarkMode
+                                    ? "bg-gray-700"
+                                    : "bg-gray-50"
+                                  : isDarkMode
+                                  ? "bg-gray-800"
+                                  : "bg-white"
+                              } hover:${
+                                isDarkMode ? "bg-gray-700" : "bg-gray-100"
+                              }`}
                             >
-                              <p className="text-sm text-gray-700">{notification.message}</p>
-                              <p className="text-xs text-gray-500">{notification.time}</p>
+                              <p
+                                className={`text-sm ${
+                                  isDarkMode ? "text-gray-200" : "text-gray-700"
+                                }`}
+                              >
+                                {notification.message}
+                              </p>
+                              <p
+                                className={`text-xs ${
+                                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                                }`}
+                              >
+                                {notification.time}
+                              </p>
                             </div>
                           ))}
                       </div>
-                      {/* Tombol "Lihat Semua Notifikasi" */}
                       <Link
                         href="/notification"
-                        className="mt-4 block w-full text-center text-sm text-blue-600 hover:underline"
+                        className={`mt-4 block w-full text-center text-sm ${
+                          isDarkMode ? "text-blue-400" : "text-blue-600"
+                        } hover:underline`}
                       >
-                        Lihat Semua Notifikasi
+                        Show All Notification
                       </Link>
                     </div>
                   </div>
@@ -213,85 +305,100 @@ const Navbar = () => {
               </div>
 
               {/* Profil */}
-              <div className="relative">
+              <div className="relative" ref={profileRef}>
                 <button
                   type="button"
                   onClick={toggleProfile}
                   className={`flex rounded-full text-sm ${
                     isScrolled
-                      ? "text-gray-800 hover:bg-gray-200"
+                      ? isDarkMode
+                        ? "text-gray-200 hover:bg-gray-700"
+                        : "text-gray-800 hover:bg-gray-200"
+                      : isDarkMode
+                      ? "text-gray-200 hover:bg-gray-700"
                       : "text-white hover:bg-blue-600"
                   } focus:outline-none focus:ring-2 focus:ring-white`}
+                  id="user-menu-button"
+                  aria-expanded="false"
+                  aria-haspopup="true"
                 >
                   <span className="sr-only">Open user menu</span>
-                  {user.image ? (
+                  {userProfile.profilePicture ? (
                     <Image
                       width={32}
                       height={32}
                       className="h-8 w-8 rounded-full"
-                      src={user.image}
+                      src={userProfile.profilePicture}
                       alt="Profile"
                     />
                   ) : (
-                    <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                      {getInitials(user.name)}
+                    <div
+                      className={`h-8 w-8 rounded-full flex items-center justify-center text-white font-bold ${
+                        isDarkMode ? "bg-gray-700" : "bg-blue-600"
+                      }`}
+                    >
+                      {userProfile.name.charAt(0)}
                     </div>
                   )}
                 </button>
 
                 {/* Pop-up Profil */}
                 {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-lg bg-white shadow-lg">
-                    <div className="p-4">
-                      {/* Bagian Informasi Profil */}
-                      <div className="flex flex-col items-center space-y-3">
-                        {/* Foto Profil atau Huruf Awalan */}
-                        <div className="flex justify-center">
-                          {user.image ? (
-                            <Image
-                              width={80}
-                              height={80}
-                              className="h-20 w-20 rounded-full"
-                              src={user.image}
-                              alt="Profile"
-                            />
-                          ) : (
-                            <div className="h-20 w-20 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-2xl">
-                              {getInitials(user.name)}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Nama dan Email */}
-                        <div className="text-center">
-                          <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                          <p className="text-xs text-gray-500">{user.email}</p>
-                        </div>
+                  <div
+                    className={`absolute right-0 mt-2 w-64 rounded-lg shadow-lg ${
+                      isDarkMode ? "bg-gray-800" : "bg-blue-50"
+                    }`}
+                  >
+                    <div className="p-4 text-center">
+                      {/* Foto Profil */}
+                      <div className="flex justify-center">
+                        {userProfile.profilePicture ? (
+                          <Image
+                            width={80}
+                            height={80}
+                            className="h-20 w-20 rounded-full"
+                            src={userProfile.profilePicture}
+                            alt="Profile"
+                          />
+                        ) : (
+                          <div
+                            className={`h-20 w-20 rounded-full flex items-center justify-center text-white text-3xl font-bold ${
+                              isDarkMode ? "bg-gray-700" : "bg-blue-600"
+                            }`}
+                          >
+                            {userProfile.name.charAt(0)}
+                          </div>
+                        )}
                       </div>
-
-                      {/* Opsi Profil */}
-                      <div className="mt-4 space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <input type="checkbox" id="sync" className="form-checkbox" />
-                          <label htmlFor="sync" className="text-sm text-gray-700">Sync is on</label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <input type="checkbox" id="customize" className="form-checkbox" checked />
-                          <label htmlFor="customize" className="text-sm text-gray-700">Customize profile</label>
-                        </div>
-                        <Link
-                          href="/profile/edit"
-                          className="block w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-lg"
+                      {/* Informasi Profil */}
+                      <div className="mt-4">
+                        <p
+                          className={`text-sm font-medium ${
+                            isDarkMode ? "text-gray-200" : "text-gray-800"
+                          }`}
                         >
-                          Manage your Google Account
-                        </Link>
-                        <button
-                          onClick={toggleProfile}
-                          className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-lg"
+                          {userProfile.name}
+                        </p>
+                        <p
+                          className={`text-xs ${
+                            isDarkMode ? "text-gray-400" : "text-gray-600"
+                          }`}
                         >
-                          Close this profile
-                        </button>
+                          {userProfile.email}
+                        </p>
                       </div>
+                      {/* Tombol Settings */}
+                      <Link
+                        href="/settings"
+                        className={`mt-4 w-full flex items-center justify-center space-x-2 text-sm ${
+                          isDarkMode ? "text-blue-400" : "text-blue-600"
+                        } hover:${
+                          isDarkMode ? "bg-gray-700" : "bg-blue-100"
+                        } p-2 rounded-lg transition-colors`}
+                      >
+                        <FaCog className={isDarkMode ? "text-blue-400" : "text-blue-600"} />
+                        <span>Settings</span>
+                      </Link>
                     </div>
                   </div>
                 )}
