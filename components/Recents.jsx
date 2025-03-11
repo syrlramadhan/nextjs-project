@@ -54,7 +54,7 @@ const Recents = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/properties');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/properties`);
         if (!response.ok) {
           throw new Error('Failed to fetch properties');
         }
@@ -121,7 +121,7 @@ const Recents = () => {
                   } rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col`}
                 >
                   <img
-                    src={error ? `images/properties/${property.photo}` : `http://localhost:5000${property.photo}`}
+                    src={error ? `images/properties/${property.photo}` : process.env.NEXT_PUBLIC_API_URL + property.photo}
                     alt={property.name}
                     className="w-full h-48 object-cover rounded-t-xl"
                   />

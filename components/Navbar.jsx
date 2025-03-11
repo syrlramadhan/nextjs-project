@@ -34,11 +34,11 @@ const Navbar = () => {
     },
   ]);
 
-  const userProfile = {
-    name: "John Doe",
-    email: "johndoe@example.com",
+  const [userProfile, setUserProfile] = useState({
+    name: "",
+    email: "",
     profilePicture: null,
-  };
+  });
 
   const unreadNotificationsCount = notifications.filter(
     (notification) => !notification.isRead
@@ -46,6 +46,33 @@ const Navbar = () => {
 
   const notificationRef = useRef(null);
   const profileRef = useRef(null);
+
+  // Data user dummy jika tidak terhubung ke API
+  const [dummyUser, setDummyUser] = useState({
+    name: "User Name",
+    email: "useremail@example.com",
+    profilePicture: null,
+  });
+
+  // Fungsi untuk mengambil data user dari API
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/me`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+      const data = await response.json();
+      setUserProfile(data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      // Gunakan data dummy jika terjadi error
+      setUserProfile(dummyUser);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, [dummyUser]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);

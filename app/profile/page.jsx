@@ -1,16 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useTheme } from "@/context/ThemeContext"; // Import useTheme
 
 const ProfileEditPage = () => {
   const { isDarkMode } = useTheme(); // Ambil state dark mode
-  // State untuk data profil
-  const [name, setName] = useState("Syahrul Ramadhan");
-  const [email, setEmail] = useState("105841113722@student.unismuh.ac.id");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Data user dummy jika tidak terhubung ke API
+  const [dummyUser, setDummyUser] = useState({
+    name: "User Name",
+    email: "useremail@example.com",
+    profilePicture: null,
+  });
+
+  // Fungsi untuk mengambil data user dari API
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/me`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+      const data = await response.json();
+      setName(data.name);
+      setEmail(data.email);
+      setProfileImage(data.profilePicture);
+      setPreviewImage(data.profilePicture);
+      setError(null);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setError(error.message);
+      // Gunakan data dummy jika terjadi error
+      setName(dummyUser.name);
+      setEmail(dummyUser.email);
+      setProfileImage(dummyUser.profilePicture);
+      setPreviewImage(dummyUser.profilePicture);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
   // Fungsi untuk menangani upload gambar
   const handleImageUpload = (e) => {
@@ -22,10 +60,44 @@ const ProfileEditPage = () => {
   };
 
   // Fungsi untuk menyimpan perubahan
-  const handleSave = () => {
-    // Simulasi penyimpanan data
-    console.log("Data yang disimpan:", { name, email, profileImage });
-    alert("Profil berhasil diperbarui!");
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      if (profileImage) {
+        formData.append("profilePicture", profileImage);
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/update`, {
+        method: "PUT",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
+
+      const data = await response.json();
+      alert("Profil berhasil diperbarui!");
+      setProfileImage(data.profilePicture);
+      setPreviewImage(data.profilePicture);
+
+      // Perbarui data dummy jika tidak terhubung ke API
+      if (error) {
+        setDummyUser({
+          name,
+          email,
+          profilePicture: previewImage,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Gagal memperbarui profil. Silakan coba lagi.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -118,11 +190,14 @@ const ProfileEditPage = () => {
           <div className="flex justify-end">
             <button
               onClick={handleSave}
+              disabled={isLoading}
               className={`px-6 py-2 ${
                 isDarkMode ? "bg-blue-700 hover:bg-blue-600" : "bg-blue-600 hover:bg-blue-500"
-              } text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              } text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              Simpan Perubahan
+              {isLoading ? "Menyimpan..." : "Simpan Perubahan"}
             </button>
           </div>
         </div>

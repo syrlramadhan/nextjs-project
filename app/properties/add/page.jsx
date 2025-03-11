@@ -72,7 +72,7 @@ const AddProperty = () => {
       formData.append("description", property.description);
       formData.append("photo", property.photo);
 
-      const response = await fetch("http://localhost:5000/api/add-property", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/add-property`, {
         method: "POST",
         body: formData,
       });

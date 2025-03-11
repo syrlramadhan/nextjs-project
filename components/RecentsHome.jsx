@@ -59,7 +59,7 @@ const RecentsHome = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/properties');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/properties`);
         if (!response.ok) {
           throw new Error('Failed to fetch properties');
         }
@@ -111,7 +111,7 @@ const RecentsHome = () => {
                         src={
                           error
                             ? property.imgSrc // Gunakan path relatif dari dummy data
-                            : `http://localhost:5000${property.photo}`
+                            : process.env.NEXT_PUBLIC_API_URL + property.photo
                         }
                         alt={property.title}
                         className="w-full h-48 object-cover rounded-t-xl"
