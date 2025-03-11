@@ -137,7 +137,7 @@ const Navbar = () => {
     <>
       {/* Navbar */}
       <nav
-        className={`fixed top-0 left-0 w-full ${
+        className={`fixed top-0 left-0 min-w-full ${
           isScrolled
             ? `backdrop-blur-sm ${
                 isDarkMode ? "bg-gray-800/50" : "bg-white/50"
@@ -208,7 +208,7 @@ const Navbar = () => {
             {/* Menu Kanan (Login, Notifikasi, Profil) */}
             <div className="flex items-center space-x-4">
               {/* Tombol Login */}
-              <Link
+              {/* <Link
                 href="/login"
                 className={`flex items-center rounded-lg px-3 py-2 ${
                   isScrolled
@@ -232,7 +232,7 @@ const Navbar = () => {
                   }`}
                 />
                 <span>Login</span>
-              </Link>
+              </Link> */}
 
               {/* Notifikasi */}
               <div className="relative" ref={notificationRef}>

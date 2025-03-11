@@ -9,9 +9,9 @@ const Footer = () => {
 
   return (
     <footer className={`${isDarkMode ? "bg-gray-800" : "bg-blue-700"} text-white py-6`}>
-      <div className="container mx-auto px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Grid untuk kolom informasi */}
-        <div className="flex justify-between grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Kolom 1: Tentang Kami */}
           <div>
             <motion.h3
@@ -38,7 +38,7 @@ const Footer = () => {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-sm font-bold mb-4"
+              className="text-base font-bold mb-4"
             >
               Tautan Cepat
             </motion.h3>
